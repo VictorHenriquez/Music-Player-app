@@ -1,24 +1,37 @@
-import { StatusBar } from "expo-status-bar";
-import { colors } from '../constants/tokens'
-import { StyleSheet,Text,View } from "react-native";
+import { playbackService } from '@/constants/playbackService'
+import { colors } from '@/constants/tokens'
+import { useLogTrackPlayerState } from '@/hooks/useLogTrackPlayerState'
+import { useSetupTrackPlayer } from '@/hooks/useSetupTrackPlayer'
 import { SplashScreen, Stack } from 'expo-router'
+import { StatusBar } from 'expo-status-bar'
+import { useCallback } from 'react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
+import TrackPlayer from 'react-native-track-player'
 
- 
+SplashScreen.preventAutoHideAsync()
 
- 
-const App=()=>{
+TrackPlayer.registerPlaybackService(() => playbackService)
 
+const App = () => {
+	const handleTrackPlayerLoaded = useCallback(() => {
+		SplashScreen.hideAsync()
+	}, [])
 
-    return (
-        <SafeAreaProvider>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-            <RootNavigation />
+	useSetupTrackPlayer({
+		onLoad: handleTrackPlayerLoaded,
+	})
 
-            <StatusBar style="auto" />
-        </GestureHandlerRootView>
-    </SafeAreaProvider>
+	useLogTrackPlayerState()
+
+	return (
+		<SafeAreaProvider>
+			<GestureHandlerRootView style={{ flex: 1 }}>
+				<RootNavigation />
+
+				<StatusBar style="auto" />
+			</GestureHandlerRootView>
+		</SafeAreaProvider>
 	)
 }
 
@@ -55,4 +68,4 @@ const RootNavigation = () => {
 	)
 }
 
-export default App;
+export default App
